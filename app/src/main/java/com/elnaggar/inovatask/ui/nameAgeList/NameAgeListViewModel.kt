@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.elnaggar.inovatask.data.entity.NameAge
 import com.elnaggar.inovatask.data.repository.NameAgeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,10 +16,9 @@ class NameAgeListViewModel @Inject constructor(private val nameAgeRepository: Na
     ViewModel() {
 
     private val _stateLiveData = MutableLiveData<NameAgeListState>()
-    val staLiveData: LiveData<NameAgeListState> = _stateLiveData
+    val stateLiveData: LiveData<NameAgeListState> = _stateLiveData
 
     fun getNameAgeList() {
-        _stateLiveData.value = NameAgeListState.Loading
         viewModelScope.launch {
             try {
                 val result = nameAgeRepository.getNameAgeList()
@@ -27,12 +27,16 @@ class NameAgeListViewModel @Inject constructor(private val nameAgeRepository: Na
                 }
                 _stateLiveData.value = NameAgeListState.Success(uiList)
             } catch (exception: Exception) {
+                exception
                 _stateLiveData.value = NameAgeListState.Error
             }
 
         }
     }
+
 }
+
+
 
 private fun NameAge.toUiNameAge(): UiNameAge {
     val uiName = "Name: $name"
